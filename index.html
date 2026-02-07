@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propose Day Quiz 💌</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #fff0f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        flex-direction: column;
+        text-align: center;
+        overflow: hidden;
+        position: relative;
+    }
+    h1, h2 {
+        color: #ff1493;
+    }
+    .quiz-container {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
+        max-width: 400px;
+        width: 90%;
+        z-index: 2;
+        position: relative;
+    }
+    button {
+        background: #ff69b4;
+        border: none;
+        padding: 10px 20px;
+        color: white;
+        font-size: 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 10px;
+        position: relative;
+    }
+    button:hover {
+        background: #ff1493;
+    }
+    .hidden { display: none; }
+    .hearts, .bg-heart, .float-away {
+        position: absolute;
+        font-size: 16px;
+        pointer-events: none;
+        user-select: none;
+    }
+    .hearts { color: #ff4d6d; animation: floatUp 5s linear infinite; }
+    .bg-heart { color: #ff4d6d; animation: floatUp 5s linear infinite; opacity:0.5;}
+    @keyframes floatUp {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        50% { transform: translateY(-50px) scale(1.2); opacity: 0.8; }
+        100% { transform: translateY(-100px) scale(1); opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<!-- Landing page -->
+<div class="quiz-container" id="landing">
+    <h1>Okayyy so, I have a test for you…😏</h1>
+    <button onclick="showPreQuiz()">Start</button>
+</div>
+
+<!-- Pre-quiz page -->
+<div class="quiz-container hidden" id="prequiz">
+    <h2>You need to answer this later…</h2>
+    <p>What makes "us" different? 💕</p>
+    <button onclick="startQuiz()">Next</button>
+</div>
+
+<!-- Main quiz page -->
+<div class="quiz-container hidden" id="quiz">
+    <h2 id="question"></h2>
+    <div id="options"></div>
+</div>
+
+<!-- Final page -->
+<div class="quiz-container hidden" id="final">
+    <h1>🎉Hehehehe🎉</h1>
+    <p>You passed the test…💖</p>
+    <h2>You are the best thing that has ever ever ever happenedd too meee😭🫶 I lovee uuu soo muchhh🥹❤️ I wanna try every single thing on my wishlist with you. (Vese tn you already are but) Will you be my boyfriend?🙈❤️</h2>
+  
+</div>
+
+
+<script>
+const questions = [
+    {
+        question: "Who loves the other more?",
+        options: [
+            { text: "Me❤️", correct: false },
+            { text: "You, but you don't say it😏", correct: false },
+            { text: "Both of us ❤️", correct: true }
+        ]
+    },
+    {
+        question: "Who’s more likely to text “I love you” first in a fight?",
+        options: [
+            { text: "Me", correct: true },
+            { text: "You😘", correct: false },
+            { text: "We both give in at the same time 💕", correct: false }
+        ]
+    },
+    {
+        question: "Who will lose it if we are apart too long?",
+        options: [
+            { text: "Me 😢", correct: true },
+            { text: "You 😭", correct: false },
+            { text: "Neither 😎", correct: false }
+        ]
+    },
+    {
+        question: "What is the best thing about 'us'?",
+        options: [
+            { text: "All the laughs 😂", correct: true },
+            { text: "The love 💖", correct: false },
+            { text: "Being long distance 🙃", correct: false }
+        ]
+    }
+];
+
+let currentQuestion = 0;
+
+// Show pre-quiz page
+function showPreQuiz() {
+    document.getElementById("landing").classList.add("hidden");
+    document.getElementById("prequiz").classList.remove("hidden");
+}
+
+// Start main quiz
+function startQuiz() {
+    document.getElementById("prequiz").classList.add("hidden");
+    document.getElementById("quiz").classList.remove("hidden");
+    showQuestion();
+}
+
+// Show question
+function showQuestion() {
+    const q = questions[currentQuestion];
+    document.getElementById("question").innerText = q.question;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+
+    q.options.forEach((opt) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt.text;
+
+        if(opt.correct){
+            // Correct answer: normal click
+            btn.onclick = () => checkAnswer(true);
+        } else {
+            // Wrong answer: make float away and untouchable
+            btn.onclick = () => floatAway(btn);
+        }
+
+        optionsDiv.appendChild(btn);
+    });
+}
+
+// Float wrong answers away
+function floatAway(btn){
+    btn.style.position = "absolute";
+    btn.style.pointerEvents = "none";
+    btn.style.transition = "all 1s ease";
+    btn.style.transform = `translate(${Math.random()*200-100}px, -200px) rotate(${Math.random()*360}deg)`;
+    btn.style.opacity = 0;
+}
+
+// Check answer and move to next
+function checkAnswer(correct) {
+    if(correct) createHearts();
+    currentQuestion++;
+    if(currentQuestion < questions.length) {
+        showQuestion();
+    } else {
+        document.getElementById("quiz").classList.add("hidden");
+        document.getElementById("final").classList.remove("hidden");
+    }
+}
+
+// Hearts for correct answers
+function createHearts() {
+    const heart = document.createElement("div");
+    heart.classList.add("hearts");
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.innerText = "💖";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+}
+
+// Background floating hearts
+function createBackgroundHearts() {
+    for(let i=0; i<30; i++){
+        const heart = document.createElement("div");
+        heart.classList.add("bg-heart");
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.top = Math.random() * window.innerHeight + "px";
+        heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+        heart.innerText = "❤️";
+        document.body.appendChild(heart);
+    }
+}
+
+createBackgroundHearts();
+</script>
+
+</body>
+</html>
+
+
+
+
